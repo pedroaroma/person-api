@@ -10,9 +10,7 @@ import one.digitalinnovation.personapi.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,10 +26,7 @@ public class PersonService {
         Person personToSave = personMapper.toModel(personDTO);
 
         Person personSaved = personRepository.save(personToSave);
-        return MessageResponseDTO
-                .builder()
-                .message("Created person with ID " + personSaved.getId())
-                .build();
+        return createMessageResponse(personSaved.getId(), "Created person with ID ");
     }
 
     public List<PersonDTO> getAllPersons() {
@@ -65,6 +60,25 @@ public class PersonService {
 
         personRepository.deleteById(id);
 
+    }
+
+    public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException {
+
+        verifyIfExists(id);
+
+        Person personToSave = personMapper.toModel(personDTO);
+
+        Person personToUpdate = personRepository.save(personToSave);
+
+        return createMessageResponse(personToUpdate.getId(), "Updated person with ID ");
+
+    }
+
+    private MessageResponseDTO createMessageResponse(Long id, String s) {
+        return MessageResponseDTO
+                .builder()
+                .message(s + id)
+                .build();
     }
 
     private Person verifyIfExists(Long id) throws PersonNotFoundException {
